@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    posts: Post;
+    productCategory: ProductCategory;
+    products: Product;
+    blogCategory: BlogCategory;
+    productSubCategory: ProductSubCategory;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +83,11 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    productCategory: ProductCategorySelect<false> | ProductCategorySelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    blogCategory: BlogCategorySelect<false> | BlogCategorySelect<true>;
+    productSubCategory: ProductSubCategorySelect<false> | ProductSubCategorySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -86,10 +96,30 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('pt' | 'en' | 'es') | ('pt' | 'en' | 'es')[];
+  globals: {
+    home: Home;
+    blog: Blog;
+    legado: Legado;
+    contato: Contato;
+    download: Download;
+    enoturismo: Enoturismo;
+    produtos: Produto;
+    settings: Setting;
+    sobre: Sobre;
+  };
+  globalsSelect: {
+    home: HomeSelect<false> | HomeSelect<true>;
+    blog: BlogSelect<false> | BlogSelect<true>;
+    legado: LegadoSelect<false> | LegadoSelect<true>;
+    contato: ContatoSelect<false> | ContatoSelect<true>;
+    download: DownloadSelect<false> | DownloadSelect<true>;
+    enoturismo: EnoturismoSelect<false> | EnoturismoSelect<true>;
+    produtos: ProdutosSelect<false> | ProdutosSelect<true>;
+    settings: SettingsSelect<false> | SettingsSelect<true>;
+    sobre: SobreSelect<false> | SobreSelect<true>;
+  };
+  locale: 'pt' | 'en' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -123,6 +153,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  name?: string | null;
+  roles?: ('admin' | 'user')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -148,7 +180,7 @@ export interface User {
  */
 export interface Media {
   id: string;
-  alt: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -160,6 +192,191 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  /**
+   * Tamanho: 1920x603
+   */
+  banner?: (string | null) | Media;
+  /**
+   * Tamanho: 400x320
+   */
+  thumb?: (string | null) | Media;
+  chamada?: string | null;
+  descricao?: string | null;
+  texto?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  categoria?: (string | null) | BlogCategory;
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogCategory".
+ */
+export interface BlogCategory {
+  id: string;
+  titulo?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productCategory".
+ */
+export interface ProductCategory {
+  id: string;
+  destaque?: boolean | null;
+  /**
+   * Exemplo: #FFFFFF
+   */
+  cor: string;
+  titulo?: string | null;
+  /**
+   * Tamanho: 110x413
+   */
+  imagem?: (string | null) | Media;
+  /**
+   * Subcategorias que aparecem sob esta categoria no filtro da página de produtos.
+   */
+  SubCateroria?: (string | ProductSubCategory)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productSubCategory".
+ */
+export interface ProductSubCategory {
+  id: string;
+  titulo?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  categoria?: (string | ProductCategory)[] | null;
+  Subcategoria?: (string | ProductSubCategory)[] | null;
+  destaque?: boolean | null;
+  /**
+   * Tamanho: 365x817
+   */
+  imagemHero?: (string | null) | Media;
+  /**
+   * Tamanho: 634x480
+   */
+  imagemFundoHero?: (string | null) | Media;
+  /**
+   * Tamanho: 435x659
+   */
+  imagemFundo?: (string | null) | Media;
+  /**
+   * Tamanho: 183x609
+   */
+  thumb?: (string | null) | Media;
+  titulo?: string | null;
+  tipo?: string | null;
+  chamada?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  descricao?: string | null;
+  link?: string | null;
+  secaoHarmonizacao?: {
+    titulo?: string | null;
+    harmonizacoes?:
+      | {
+          /**
+           * Sem tamanho padrão
+           */
+          imagem?: (string | null) | Media;
+          titulo?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Tamanho: 1931x826
+   */
+  banner?: (string | null) | Media;
+  sobre?: {
+    titulo?: string | null;
+    descricao?: string | null;
+    caracteristicas?:
+      | {
+          titulo?: string | null;
+          descricao?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Tamanho: 623x800
+     */
+    imagemCaracteristicas?: (string | null) | Media;
+  };
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -192,6 +409,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'productCategory';
+        value: string | ProductCategory;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'blogCategory';
+        value: string | BlogCategory;
+      } | null)
+    | ({
+        relationTo: 'productSubCategory';
+        value: string | ProductSubCategory;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -240,6 +477,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +513,116 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  banner?: T;
+  thumb?: T;
+  chamada?: T;
+  descricao?: T;
+  texto?: T;
+  categoria?: T;
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productCategory_select".
+ */
+export interface ProductCategorySelect<T extends boolean = true> {
+  destaque?: T;
+  cor?: T;
+  titulo?: T;
+  imagem?: T;
+  SubCateroria?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  categoria?: T;
+  Subcategoria?: T;
+  destaque?: T;
+  imagemHero?: T;
+  imagemFundoHero?: T;
+  imagemFundo?: T;
+  thumb?: T;
+  titulo?: T;
+  tipo?: T;
+  chamada?: T;
+  descricao?: T;
+  link?: T;
+  secaoHarmonizacao?:
+    | T
+    | {
+        titulo?: T;
+        harmonizacoes?:
+          | T
+          | {
+              imagem?: T;
+              titulo?: T;
+              id?: T;
+            };
+      };
+  banner?: T;
+  sobre?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        caracteristicas?:
+          | T
+          | {
+              titulo?: T;
+              descricao?: T;
+              id?: T;
+            };
+        imagemCaracteristicas?: T;
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogCategory_select".
+ */
+export interface BlogCategorySelect<T extends boolean = true> {
+  titulo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "productSubCategory_select".
+ */
+export interface ProductSubCategorySelect<T extends boolean = true> {
+  titulo?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +663,1041 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: string;
+  Slides?:
+    | (
+        | {
+            /**
+             * Tamanho padrão para imagem e video:1920x1080
+             */
+            banner?: (string | null) | Media;
+            titulo?: string | null;
+            botao?: string | null;
+            textoBotao?: string | null;
+            descricao?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image_slide';
+          }
+        | {
+            ativarTexto?: boolean | null;
+            video: string | Media;
+            titulo?: string | null;
+            botao?: string | null;
+            textoBotao?: string | null;
+            descricao?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'video_slide';
+          }
+      )[]
+    | null;
+  enoturismo?: {
+    titulo?: string | null;
+    descricao?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    linkBotao?: string | null;
+    textoBotao?: string | null;
+    /**
+     * 844x870
+     */
+    imagem?: (string | null) | Media;
+    /**
+     * Tamanho: 640x358
+     */
+    video?: (string | null) | Media;
+    /**
+     * Tamanho: 640x358
+     */
+    fundoVideo?: (string | null) | Media;
+  };
+  destaques?: (string | null) | Product;
+  imagem?: (string | null) | Media;
+  secaoDiferenciais?: {
+    titulo?: string | null;
+    diferenciais?:
+      | {
+          titulo?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          /**
+           * Tamanho: 110x110
+           */
+          imagem?: (string | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  secaoQuemSomos?: {
+    titulo?: string | null;
+    descicao?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    botao?: string | null;
+    textoBotao?: string | null;
+    /**
+     * 390x390
+     */
+    imagem1?: (string | null) | Media;
+    /**
+     * Tamanho: 960x390
+     */
+    video?: (string | null) | Media;
+    fundoVideo?: (string | null) | Media;
+    /**
+     * 230x230
+     */
+    imagem2?: (string | null) | Media;
+    /**
+     * 390x576
+     */
+    imagem3?: (string | null) | Media;
+    /**
+     * 390x390
+     */
+    imagem4?: (string | null) | Media;
+  };
+  secaoBlog?: {
+    titulo?: string | null;
+    descricao?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    botao?: string | null;
+    textoBotao?: string | null;
+  };
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog".
+ */
+export interface Blog {
+  id: string;
+  /**
+   * Tamanho: 1039x631
+   */
+  imagem?: (string | null) | Media;
+  titulo?: string | null;
+  description?: string | null;
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legado".
+ */
+export interface Legado {
+  id: string;
+  titulo?: string | null;
+  chamada?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  slidesOrigem?:
+    | {
+        titulo?: string | null;
+        descricao?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        imagem?: (string | null) | Media;
+        anoOrigem?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  secaoMomentos?: {
+    titulo?: string | null;
+    chamada?: string | null;
+    descricao?: string | null;
+    slidesMomentos?:
+      | {
+          imagem?: (string | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  secaoOnline?: {
+    titulo?: string | null;
+    chamada?: string | null;
+    descricao?: string | null;
+    episodios?:
+      | (
+          | {
+              url?: string | null;
+              titulo?: string | null;
+              chamada?: string | null;
+              capa?: (string | null) | Media;
+              id?: string | null;
+              blockName?: string | null;
+              blockType: 'url_episodio';
+            }
+          | {
+              video: string | Media;
+              titulo?: string | null;
+              chamada?: string | null;
+              capa?: (string | null) | Media;
+              id?: string | null;
+              blockName?: string | null;
+              blockType: 'video_episodio';
+            }
+        )[]
+      | null;
+  };
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contato".
+ */
+export interface Contato {
+  id: string;
+  /**
+   * Tamanho: 1920x560
+   */
+  banner?: (string | null) | Media;
+  titulo?: string | null;
+  description?: string | null;
+  texto?: string | null;
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "download".
+ */
+export interface Download {
+  id: string;
+  titulo?: string | null;
+  descricao?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * 735x585
+   */
+  imagem?: (string | null) | Media;
+  catalogoProdutos?: {
+    descricao?: string | null;
+    arquivo?: string | null;
+    icone?: (string | null) | Media;
+  };
+  midiaKit?: {
+    descricao?: string | null;
+    icone?: (string | null) | Media;
+    arquivo?: string | null;
+  };
+  /**
+   * 659x607
+   */
+  imagem2?: (string | null) | Media;
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enoturismo".
+ */
+export interface Enoturismo {
+  id: string;
+  /**
+   * Tamanho: 565x531
+   */
+  imagem1?: (string | null) | Media;
+  /**
+   * Tamanho: 994x531
+   */
+  imagem2?: (string | null) | Media;
+  /**
+   * Tamanho: 465x531
+   */
+  imagem3?: (string | null) | Media;
+  secao?: {
+    titulo?: string | null;
+    /**
+     * Tamanho: 1266x600
+     */
+    video?: (string | null) | Media;
+    /**
+     * 1266x600
+     */
+    fundoVideo?: (string | null) | Media;
+    /**
+     * 463x600
+     */
+    imagem?: (string | null) | Media;
+  };
+  roteiros?:
+    | {
+        /**
+         * 378x269
+         */
+        imagem?: (string | null) | Media;
+        titulo?: string | null;
+        descricao?: string | null;
+        linkBotao?: string | null;
+        lista?:
+          | {
+              titulo?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "produtos".
+ */
+export interface Produto {
+  id: string;
+  /**
+   * 520x340
+   */
+  imagem?: (string | null) | Media;
+  titulo?: string | null;
+  descricao?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  categorias?: (string | null) | ProductCategory;
+  banner?: {
+    /**
+     * 1638x666
+     */
+    imagem?: (string | null) | Media;
+  };
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Setting {
+  id: string;
+  favicon?: (string | null) | Media;
+  selo?: (string | null) | Media;
+  destinatarios?:
+    | {
+        email?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  email?: string | null;
+  endereco?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  telefone?: string | null;
+  whatsapp?: string | null;
+  mapa?: string | null;
+  loja?: string | null;
+  politicaPrivacidade?: string | null;
+  politicaCookies?: string | null;
+  catalogo?: string | null;
+  fichasTecnicas?: string | null;
+  cnpj?: string | null;
+  redes?:
+    | {
+        link?: string | null;
+        icone?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sobre".
+ */
+export interface Sobre {
+  id: string;
+  titulo?: string | null;
+  textoBotao?: string | null;
+  linkBotao?: string | null;
+  descricao?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  chamada?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Tamanho: 1920x1080
+   */
+  banner?: (string | null) | Media;
+  /**
+   * Tamanho: 682x323
+   */
+  video?: (string | null) | Media;
+  fundoVideo?: (string | null) | Media;
+  legado?: {
+    /**
+     * Tamanho: 1804x520
+     */
+    banner?: (string | null) | Media;
+    titulo?: string | null;
+    textoBotao?: string | null;
+    linkBotao?: string | null;
+    texto?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    lista?:
+      | {
+          /**
+           * Tamanho: 571x508
+           */
+          imagem?: (string | null) | Media;
+          descricao?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  estrutura?: {
+    titulo?: string | null;
+    lista?:
+      | {
+          /**
+           * Sem tamanho padrão
+           */
+          icone?: (string | null) | Media;
+          titulo?: string | null;
+          descricao?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  secaoBanner?: {
+    titulo?: string | null;
+    descricao?: string | null;
+    botao?: string | null;
+    textoBotao?: string | null;
+    /**
+     * 1552x487
+     */
+    imagem?: (string | null) | Media;
+  };
+  Seo: {
+    titulo: string;
+    descricao: string;
+    palavrasChave: string;
+    ImagemCompartilhada: string | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  Slides?:
+    | T
+    | {
+        image_slide?:
+          | T
+          | {
+              banner?: T;
+              titulo?: T;
+              botao?: T;
+              textoBotao?: T;
+              descricao?: T;
+              id?: T;
+              blockName?: T;
+            };
+        video_slide?:
+          | T
+          | {
+              ativarTexto?: T;
+              video?: T;
+              titulo?: T;
+              botao?: T;
+              textoBotao?: T;
+              descricao?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  enoturismo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        linkBotao?: T;
+        textoBotao?: T;
+        imagem?: T;
+        video?: T;
+        fundoVideo?: T;
+      };
+  destaques?: T;
+  imagem?: T;
+  secaoDiferenciais?:
+    | T
+    | {
+        titulo?: T;
+        diferenciais?:
+          | T
+          | {
+              titulo?: T;
+              imagem?: T;
+              id?: T;
+            };
+      };
+  secaoQuemSomos?:
+    | T
+    | {
+        titulo?: T;
+        descicao?: T;
+        botao?: T;
+        textoBotao?: T;
+        imagem1?: T;
+        video?: T;
+        fundoVideo?: T;
+        imagem2?: T;
+        imagem3?: T;
+        imagem4?: T;
+      };
+  secaoBlog?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        botao?: T;
+        textoBotao?: T;
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog_select".
+ */
+export interface BlogSelect<T extends boolean = true> {
+  imagem?: T;
+  titulo?: T;
+  description?: T;
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legado_select".
+ */
+export interface LegadoSelect<T extends boolean = true> {
+  titulo?: T;
+  chamada?: T;
+  slidesOrigem?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        imagem?: T;
+        anoOrigem?: T;
+        id?: T;
+      };
+  secaoMomentos?:
+    | T
+    | {
+        titulo?: T;
+        chamada?: T;
+        descricao?: T;
+        slidesMomentos?:
+          | T
+          | {
+              imagem?: T;
+              id?: T;
+            };
+      };
+  secaoOnline?:
+    | T
+    | {
+        titulo?: T;
+        chamada?: T;
+        descricao?: T;
+        episodios?:
+          | T
+          | {
+              url_episodio?:
+                | T
+                | {
+                    url?: T;
+                    titulo?: T;
+                    chamada?: T;
+                    capa?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+              video_episodio?:
+                | T
+                | {
+                    video?: T;
+                    titulo?: T;
+                    chamada?: T;
+                    capa?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+            };
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contato_select".
+ */
+export interface ContatoSelect<T extends boolean = true> {
+  banner?: T;
+  titulo?: T;
+  description?: T;
+  texto?: T;
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "download_select".
+ */
+export interface DownloadSelect<T extends boolean = true> {
+  titulo?: T;
+  descricao?: T;
+  imagem?: T;
+  catalogoProdutos?:
+    | T
+    | {
+        descricao?: T;
+        arquivo?: T;
+        icone?: T;
+      };
+  midiaKit?:
+    | T
+    | {
+        descricao?: T;
+        icone?: T;
+        arquivo?: T;
+      };
+  imagem2?: T;
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enoturismo_select".
+ */
+export interface EnoturismoSelect<T extends boolean = true> {
+  imagem1?: T;
+  imagem2?: T;
+  imagem3?: T;
+  secao?:
+    | T
+    | {
+        titulo?: T;
+        video?: T;
+        fundoVideo?: T;
+        imagem?: T;
+      };
+  roteiros?:
+    | T
+    | {
+        imagem?: T;
+        titulo?: T;
+        descricao?: T;
+        linkBotao?: T;
+        lista?:
+          | T
+          | {
+              titulo?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "produtos_select".
+ */
+export interface ProdutosSelect<T extends boolean = true> {
+  imagem?: T;
+  titulo?: T;
+  descricao?: T;
+  categorias?: T;
+  banner?:
+    | T
+    | {
+        imagem?: T;
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings_select".
+ */
+export interface SettingsSelect<T extends boolean = true> {
+  favicon?: T;
+  selo?: T;
+  destinatarios?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
+  email?: T;
+  endereco?: T;
+  telefone?: T;
+  whatsapp?: T;
+  mapa?: T;
+  loja?: T;
+  politicaPrivacidade?: T;
+  politicaCookies?: T;
+  catalogo?: T;
+  fichasTecnicas?: T;
+  cnpj?: T;
+  redes?:
+    | T
+    | {
+        link?: T;
+        icone?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sobre_select".
+ */
+export interface SobreSelect<T extends boolean = true> {
+  titulo?: T;
+  textoBotao?: T;
+  linkBotao?: T;
+  descricao?: T;
+  chamada?: T;
+  banner?: T;
+  video?: T;
+  fundoVideo?: T;
+  legado?:
+    | T
+    | {
+        banner?: T;
+        titulo?: T;
+        textoBotao?: T;
+        linkBotao?: T;
+        texto?: T;
+        lista?:
+          | T
+          | {
+              imagem?: T;
+              descricao?: T;
+              id?: T;
+            };
+      };
+  estrutura?:
+    | T
+    | {
+        titulo?: T;
+        lista?:
+          | T
+          | {
+              icone?: T;
+              titulo?: T;
+              descricao?: T;
+              id?: T;
+            };
+      };
+  secaoBanner?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        botao?: T;
+        textoBotao?: T;
+        imagem?: T;
+      };
+  Seo?:
+    | T
+    | {
+        titulo?: T;
+        descricao?: T;
+        palavrasChave?: T;
+        ImagemCompartilhada?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
