@@ -45,34 +45,36 @@ ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# su-exec permite dropar privilégio de root -> nextjs no entrypoint
+# su-exec permite dropar privilégio de root -> node no entrypoint
 RUN apk add --no-cache su-exec
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 --ingroup nodejs nextjs
+# Usamos o usuário 'node' (uid/gid 1000) que já vem na imagem node:alpine.
+# 1000 é o mesmo uid que o Coolify usa como dono do volume no host, então
+# mesmo que o Coolify resete o dono do /app/media a cada deploy, o processo
+# continua sendo o dono e mantém o acesso.
 
 # Remove this line if you do not have this folder
 COPY --from=builder /app/public ./public
 
 # Set the correct permission for prerender cache
 RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN chown node:node .next
 
 # Create the media upload dir owned by the runtime user (Payload staticDir)
-RUN mkdir -p /app/media && chown -R nextjs:nodejs /app/media
+RUN mkdir -p /app/media && chown -R node:node /app/media
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 
 # Entrypoint roda como root só para ajustar o dono do volume montado
-# (/app/media, resetado pelo Coolify a cada deploy) e então dropa para nextjs.
+# (/app/media, resetado pelo Coolify a cada deploy) e então dropa para node.
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# NÃO definimos `USER nextjs`: o container inicia como root e o entrypoint
-# baixa o privilégio para nextjs via su-exec.
+# NÃO definimos `USER node`: o container inicia como root e o entrypoint
+# baixa o privilégio para node via su-exec.
 
 EXPOSE 3000
 
