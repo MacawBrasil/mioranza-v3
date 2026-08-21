@@ -45,8 +45,11 @@ ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
+# su-exec permite dropar privilégio de root -> nextjs no entrypoint
+RUN apk add --no-cache su-exec
+
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 --ingroup nodejs nextjs
 
 # Remove this line if you do not have this folder
 COPY --from=builder /app/public ./public
@@ -63,12 +66,20 @@ RUN mkdir -p /app/media && chown -R nextjs:nodejs /app/media
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
+# Entrypoint roda como root só para ajustar o dono do volume montado
+# (/app/media, resetado pelo Coolify a cada deploy) e então dropa para nextjs.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# NÃO definimos `USER nextjs`: o container inicia como root e o entrypoint
+# baixa o privilégio para nextjs via su-exec.
 
 EXPOSE 3000
 
 ENV PORT 3000
+ENV HOSTNAME 0.0.0.0
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["node", "server.js"]
