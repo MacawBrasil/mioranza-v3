@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import path from 'path'
 
 import { ALL_CONTENT_TAGS } from '@/lib/cache'
 import { revalidateCollection, revalidateCollectionDelete } from '@/hooks/revalidate'
@@ -10,7 +11,7 @@ export const Media: CollectionConfig = {
     afterDelete: [revalidateCollectionDelete(ALL_CONTENT_TAGS)],
   },
   upload: {
-    staticDir: 'media',
+    staticDir: process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media'),
     mimeTypes: ['image/*', 'video/*'],
   },
   access: {
