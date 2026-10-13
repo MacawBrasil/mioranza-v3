@@ -1,28 +1,27 @@
+"use server";
+
+import { sendEmail } from "../../lib/smtp-mail";
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use server'
 
-import sgMail from '@sendgrid/mail'
-import { type z } from 'zod'
+import { type z } from "zod";
 
-import { FormSchema } from '@/lib/schema'
-import { fetchSetting } from './_api/fetchGlobals'
+import { FormSchema } from "@/lib/schema";
+import { fetchSetting } from "./_api/fetchGlobals";
 
-sgMail.setApiKey(`${process.env.SENDGRID_API_KEY}`)
-
-type Inputs = z.infer<typeof FormSchema>
+type Inputs = z.infer<typeof FormSchema>;
 
 export async function addEntry(data: Inputs) {
-  const result = FormSchema.safeParse(data)
-  const settings = await fetchSetting()
+  const result = FormSchema.safeParse(data);
+  const settings = await fetchSetting();
 
-  const dests = settings?.destinatarios?.map(dest => dest.email)
+  const dests = settings?.destinatarios?.map((dest) => dest.email);
 
   if (result.success) {
     try {
-      await sgMail.send({
+      await sendEmail({
         to: dests,
-        from: `Nova mensagem do site Mioranza <enviosmacaw@gmail.com>`,
+
         subject: `Nova mensagem vinda do site Mioranza - Contato`,
         replyTo: result.data.email,
         html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -44,12 +43,12 @@ export async function addEntry(data: Inputs) {
               </div>
             </body>
           </html>`,
-      })
+      });
 
-      return { ok: true }
+      return { ok: true };
     } catch (error: unknown) {
-      return { error: true }
+      return { error: true };
     }
   }
-  return { success: false, error: result.error.format() }
+  return { success: false, error: result.error.format() };
 }
